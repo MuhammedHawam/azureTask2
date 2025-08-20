@@ -95,10 +95,18 @@ public class OutletRepository : IOutletRepository
     {
         _logger.LogDebug("Getting outlet count with filters");
 
-        var query = _context.Outlets.AsNoTracking().AsQueryable();
-        query = ApplyFilters(query, year, week, healthStatus, searchTerm);
+        // Ensure count reflects the same latest-per-outlet selection as GetAllAsync
+        var latestPerOutletQuery = _context.Outlets
+            .AsNoTracking()
+            .GroupBy(o => o.OutletIdentifier)
+            .Select(g => g
+                .OrderByDescending(o => EF.Property<int>(o, "Year"))
+                .ThenByDescending(o => EF.Property<int>(o, "Week"))
+                .First());
 
-        return await query.CountAsync(cancellationToken);
+        var filtered = ApplyFilters(latestPerOutletQuery, year, week, healthStatus, searchTerm);
+
+        return await filtered.CountAsync(cancellationToken);
     }
 
     public async Task<Outlet> AddAsync(Outlet outlet, CancellationToken cancellationToken = default)
