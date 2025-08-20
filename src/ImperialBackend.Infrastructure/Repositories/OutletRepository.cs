@@ -67,16 +67,42 @@ public class OutletRepository : IOutletRepository
         _logger.LogDebug("Getting outlets with filters - Page: {PageNumber}, PageSize: {PageSize}, SortBy: {SortBy}",
             pageNumber, pageSize, sortBy);
 
-        // Select the latest snapshot per outlet by (Year desc, Week desc)
-        var latestPerOutletQuery = _context.Outlets
-            .AsNoTracking()
-            .GroupBy(o => o.OutletIdentifier)
-            .Select(g => g
-                .OrderByDescending(o => EF.Property<int>(o, "Year"))
-                .ThenByDescending(o => EF.Property<int>(o, "Week"))
-                .First());
+        // Provider-friendly approach: pick latest per outlet using two-step MAX(Year) then MAX(Week)
+        var baseQuery = _context.Outlets.AsNoTracking();
 
-        // Apply filters efficiently at database level
+        // Step 1: latest year per outlet
+        var latestYearPerOutlet = baseQuery
+            .GroupBy(o => o.OutletIdentifier)
+            .Select(g => new
+            {
+                OutletIdentifier = g.Key,
+                MaxYear = g.Max(o => o.Year)
+            });
+
+        // Step 2: within that year, latest week per outlet
+        var latestWeekPerOutlet = baseQuery
+            .Join(
+                latestYearPerOutlet,
+                o => new { o.OutletIdentifier, o.Year },
+                y => new { y.OutletIdentifier, Year = y.MaxYear },
+                (o, y) => o)
+            .GroupBy(o => new { o.OutletIdentifier, o.Year })
+            .Select(g => new
+            {
+                g.Key.OutletIdentifier,
+                g.Key.Year,
+                MaxWeek = g.Max(o => o.Week)
+            });
+
+        // Final: join back to get the full outlet rows (latest per outlet)
+        var latestPerOutletQuery = baseQuery
+            .Join(
+                latestWeekPerOutlet,
+                o => new { o.OutletIdentifier, o.Year, o.Week },
+                lw => new { lw.OutletIdentifier, lw.Year, Week = lw.MaxWeek },
+                (o, lw) => o);
+
+        // Apply filters at database level
         var query = ApplyFilters(latestPerOutletQuery, year, week, healthStatus, searchTerm);
 
         // Apply sorting at database level
@@ -96,13 +122,36 @@ public class OutletRepository : IOutletRepository
         _logger.LogDebug("Getting outlet count with filters");
 
         // Ensure count reflects the same latest-per-outlet selection as GetAllAsync
-        var latestPerOutletQuery = _context.Outlets
-            .AsNoTracking()
+        var baseQuery = _context.Outlets.AsNoTracking();
+
+        var latestYearPerOutlet = baseQuery
             .GroupBy(o => o.OutletIdentifier)
-            .Select(g => g
-                .OrderByDescending(o => EF.Property<int>(o, "Year"))
-                .ThenByDescending(o => EF.Property<int>(o, "Week"))
-                .First());
+            .Select(g => new
+            {
+                OutletIdentifier = g.Key,
+                MaxYear = g.Max(o => o.Year)
+            });
+
+        var latestWeekPerOutlet = baseQuery
+            .Join(
+                latestYearPerOutlet,
+                o => new { o.OutletIdentifier, o.Year },
+                y => new { y.OutletIdentifier, Year = y.MaxYear },
+                (o, y) => o)
+            .GroupBy(o => new { o.OutletIdentifier, o.Year })
+            .Select(g => new
+            {
+                g.Key.OutletIdentifier,
+                g.Key.Year,
+                MaxWeek = g.Max(o => o.Week)
+            });
+
+        var latestPerOutletQuery = baseQuery
+            .Join(
+                latestWeekPerOutlet,
+                o => new { o.OutletIdentifier, o.Year, o.Week },
+                lw => new { lw.OutletIdentifier, lw.Year, Week = lw.MaxWeek },
+                (o, lw) => o);
 
         var filtered = ApplyFilters(latestPerOutletQuery, year, week, healthStatus, searchTerm);
 
