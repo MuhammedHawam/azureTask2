@@ -138,17 +138,20 @@ builder.Services.AddAuthorization();
 
 // Configure Entity Framework with Microsoft's official SQL Server provider for Databricks
 // Databricks SQL Warehouses are compatible with SQL Server driver
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+if (!useOdbcRepository)
 {
-    options.UseDatabricks(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    );
-    if (builder.Environment.IsDevelopment())
-    {
-        options.EnableSensitiveDataLogging();
-        options.EnableDetailedErrors();
-    }
-});
+	builder.Services.AddDbContext<ApplicationDbContext>(options =>
+	{
+		options.UseDatabricks(
+			builder.Configuration.GetConnectionString("DefaultConnection")
+		);
+		if (builder.Environment.IsDevelopment())
+		{
+			options.EnableSensitiveDataLogging();
+			options.EnableDetailedErrors();
+		}
+	});
+}
 
 // Configure MediatR
 builder.Services.AddMediatR(cfg =>
@@ -164,7 +167,16 @@ builder.Services.AddValidatorsFromAssembly(typeof(CreateOutletCommandValidator).
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // Register repositories
-builder.Services.AddScoped<IOutletRepository, OutletRepository>();
+var useOdbcRepository = builder.Configuration.GetValue<bool>("Databricks:UseOdbc");
+if (useOdbcRepository)
+{
+	builder.Services.AddSingleton<ImperialBackend.Infrastructure.Data.Odbc.DatabricksOdbcConnectionFactory>();
+	builder.Services.AddScoped<IOutletRepository, ImperialBackend.Infrastructure.Repositories.OdbcOutletRepository>();
+}
+else
+{
+	builder.Services.AddScoped<IOutletRepository, OutletRepository>();
+}
 
 // Configure CORS for frontend integration
 builder.Services.AddCors(options =>
@@ -182,8 +194,11 @@ builder.Services.AddCors(options =>
 });
 
 // Add health checks for Entity Framework
-builder.Services.AddHealthChecks()
-    .AddDbContextCheck<ApplicationDbContext>("databricks");
+var healthChecks = builder.Services.AddHealthChecks();
+if (!useOdbcRepository)
+{
+	healthChecks.AddDbContextCheck<ApplicationDbContext>("databricks");
+}
 
 // Add API versioning
 builder.Services.AddApiVersioning(options =>
