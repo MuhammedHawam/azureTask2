@@ -138,17 +138,20 @@ builder.Services.AddAuthorization();
 
 // Configure Entity Framework with Microsoft's official SQL Server provider for Databricks
 // Databricks SQL Warehouses are compatible with SQL Server driver
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+if (!useOdbcRepository)
 {
-    options.UseDatabricks(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    );
-    if (builder.Environment.IsDevelopment())
-    {
-        options.EnableSensitiveDataLogging();
-        options.EnableDetailedErrors();
-    }
-});
+	builder.Services.AddDbContext<ApplicationDbContext>(options =>
+	{
+		options.UseDatabricks(
+			builder.Configuration.GetConnectionString("DefaultConnection")
+		);
+		if (builder.Environment.IsDevelopment())
+		{
+			options.EnableSensitiveDataLogging();
+			options.EnableDetailedErrors();
+		}
+	});
+}
 
 // Configure MediatR
 builder.Services.AddMediatR(cfg =>
@@ -163,7 +166,10 @@ builder.Services.AddValidatorsFromAssembly(typeof(CreateOutletCommandValidator).
 // Configure AutoMapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-// Register repositories
+// Register Databricks SQL REST client
+builder.Services.AddHttpClient<ImperialBackend.Infrastructure.Data.DatabricksSqlRestClient>();
+
+// Register repositories (use EF context for non-REST operations still in class)
 builder.Services.AddScoped<IOutletRepository, OutletRepository>();
 
 // Configure CORS for frontend integration
@@ -182,8 +188,11 @@ builder.Services.AddCors(options =>
 });
 
 // Add health checks for Entity Framework
-builder.Services.AddHealthChecks()
-    .AddDbContextCheck<ApplicationDbContext>("databricks");
+var healthChecks = builder.Services.AddHealthChecks();
+if (!useOdbcRepository)
+{
+	healthChecks.AddDbContextCheck<ApplicationDbContext>("databricks");
+}
 
 // Add API versioning
 builder.Services.AddApiVersioning(options =>
