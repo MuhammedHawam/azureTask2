@@ -166,17 +166,11 @@ builder.Services.AddValidatorsFromAssembly(typeof(CreateOutletCommandValidator).
 // Configure AutoMapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-// Register repositories
-var useOdbcRepository = builder.Configuration.GetValue<bool>("Databricks:UseOdbc");
-if (useOdbcRepository)
-{
-	builder.Services.AddSingleton<ImperialBackend.Infrastructure.Data.Odbc.DatabricksOdbcConnectionFactory>();
-	builder.Services.AddScoped<IOutletRepository, ImperialBackend.Infrastructure.Repositories.OdbcOutletRepository>();
-}
-else
-{
-	builder.Services.AddScoped<IOutletRepository, OutletRepository>();
-}
+// Register Databricks SQL REST client
+builder.Services.AddHttpClient<ImperialBackend.Infrastructure.Data.DatabricksSqlRestClient>();
+
+// Register repositories (use EF context for non-REST operations still in class)
+builder.Services.AddScoped<IOutletRepository, OutletRepository>();
 
 // Configure CORS for frontend integration
 builder.Services.AddCors(options =>
