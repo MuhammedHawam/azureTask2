@@ -21,7 +21,6 @@ public class ApplicationDbContext : DbContext
     /// Gets or sets the Outlets DbSet
     /// </summary>
     public DbSet<Outlet> Outlets { get; set; } = null!;
-    public DbSet<OutletDetail> OutletDetails { get; set; } = null!;
 
     /// <summary>
     /// Configures the model that was discovered by convention from the entity types
@@ -36,7 +35,6 @@ public class ApplicationDbContext : DbContext
 
         // Configure specific entities
         modelBuilder.ApplyConfiguration(new OutletConfiguration());
-        modelBuilder.ApplyConfiguration(new OutletDetailConfiguration());
     }
 
     /// <summary>

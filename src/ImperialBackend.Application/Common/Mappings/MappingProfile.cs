@@ -17,7 +17,6 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<Outlet, OutletDto>();
-        CreateMap<OutletDetail, OutletDetailDto>();
         CreateMap<CreateOutletDto, CreateOutletCommand>();
     }
 }

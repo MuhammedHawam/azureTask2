@@ -165,7 +165,6 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // Register repositories
 builder.Services.AddScoped<IOutletRepository, OutletRepository>();
-builder.Services.AddScoped<IOutletDetailRepository, OutletDetailRepository>();
 
 // Configure CORS for frontend integration
 builder.Services.AddCors(options =>
