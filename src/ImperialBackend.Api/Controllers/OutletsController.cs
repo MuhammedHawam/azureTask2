@@ -69,22 +69,22 @@ public class OutletsController : ControllerBase
         }
     }
 
-    // GET: api/Outlets/{outletIdentifier}
-    [HttpGet("{outletIdentifier}")]
+    // GET: api/Outlets/{internalCode}
+    [HttpGet("{internalCode}")]
     [ProducesResponseType(typeof(OutletDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<OutletDto>> GetOutlet(string outletIdentifier)
+    public async Task<ActionResult<OutletDto>> GetOutlet(string internalCode)
     {
         try
         {
-            _logger.LogInformation("Getting outlet by identifier: {OutletIdentifier}", outletIdentifier);
+            _logger.LogInformation("Getting outlet by internalCode: {InternalCode}", internalCode);
 
-            var outlet = await _outletRepository.GetByIdAsync(outletIdentifier);
+            var outlet = await _outletRepository.GetByIdAsync(internalCode);
             if (outlet == null)
             {
-                _logger.LogWarning("Outlet not found: {OutletIdentifier}", outletIdentifier);
-                return NotFound($"Outlet with identifier {outletIdentifier} not found");
+                _logger.LogWarning("Outlet not found: {InternalCode}", internalCode);
+                return NotFound($"Outlet with internalCode {internalCode} not found");
             }
 
             var dto = _mapper.Map<OutletDto>(outlet);
@@ -92,7 +92,7 @@ public class OutletsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while getting outlet {OutletIdentifier}", outletIdentifier);
+            _logger.LogError(ex, "Error occurred while getting outlet {InternalCode}", internalCode);
             return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while retrieving the outlet");
         }
     }
@@ -117,8 +117,8 @@ public class OutletsController : ControllerBase
                 return BadRequest(result.Error);
             }
 
-            _logger.LogInformation("Successfully created outlet with Identifier: {OutletIdentifier}", result.Value?.OutletIdentifier);
-            return CreatedAtAction(nameof(GetOutlet), new { outletIdentifier = result.Value?.OutletIdentifier }, result.Value);
+            _logger.LogInformation("Successfully created outlet with InternalCode: {InternalCode}", result.Value?.InternalCode);
+            return CreatedAtAction(nameof(GetOutlet), new { internalCode = result.Value?.InternalCode }, result.Value);
         }
         catch (Exception ex)
         {

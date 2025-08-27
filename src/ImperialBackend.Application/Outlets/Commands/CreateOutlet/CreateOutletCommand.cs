@@ -22,7 +22,7 @@ public record CreateOutletCommand : IRequest<Result<OutletDto>>
     public string HealthStatus { get; init; } = string.Empty;
     public int StoreRank { get; init; }
     public string OutletName { get; init; } = string.Empty;
-    public string OutletIdentifier { get; init; } = string.Empty;
+    public string InternalCode { get; init; } = string.Empty;
     public string AddressLine1 { get; init; } = string.Empty;
     public string State { get; init; } = string.Empty;
     public string County { get; init; } = string.Empty;

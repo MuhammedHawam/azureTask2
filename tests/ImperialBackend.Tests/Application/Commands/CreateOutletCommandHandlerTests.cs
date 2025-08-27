@@ -48,7 +48,7 @@ public class CreateOutletCommandHandlerTests
             HealthStatus = "red",
             StoreRank = 173,
             OutletName = "OMEGNA 0002",
-            OutletIdentifier = "001w000001ZUPO8AAP",
+            InternalCode = "001w000001ZUPO8AAP",
             AddressLine1 = "PIAZZA BELTRAMI 21",
             State = "VB",
             County = "PIEMONTE",
@@ -69,7 +69,7 @@ public class CreateOutletCommandHandlerTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        result.Value!.OutletIdentifier.Should().Be(command.OutletIdentifier);
+        result.Value!.InternalCode.Should().Be(command.InternalCode);
         result.Value.OutletName.Should().Be(command.OutletName);
         result.Value.Year.Should().Be(command.Year);
         result.Value.Week.Should().Be(command.Week);
@@ -86,7 +86,7 @@ public class CreateOutletCommandHandlerTests
         result.Value.County.Should().Be(command.County);
 
         added.Should().NotBeNull();
-        added!.OutletIdentifier.Should().Be(command.OutletIdentifier);
+        added!.InternalCode.Should().Be(command.InternalCode);
         _mockRepository.Verify(r => r.AddAsync(It.IsAny<Outlet>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -107,7 +107,7 @@ public class CreateOutletCommandHandlerTests
             HealthStatus = "red",
             StoreRank = 173,
             OutletName = "OMEGNA 0002",
-            OutletIdentifier = "001w000001ZUPO8AAP",
+            InternalCode = "001w000001ZUPO8AAP",
             AddressLine1 = "PIAZZA BELTRAMI 21",
             State = "VB",
             County = "PIEMONTE",

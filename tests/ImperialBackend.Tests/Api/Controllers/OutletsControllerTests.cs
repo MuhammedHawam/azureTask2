@@ -67,7 +67,7 @@ public class OutletsControllerTests
                 HealthStatus = "red",
                 StoreRank = 173,
                 OutletName = "OMEGNA 0002",
-                OutletIdentifier = "001w000001ZUPO8AAP",
+                InternalCode = "001w000001ZUPO8AAP",
                 AddressLine1 = "PIAZZA BELTRAMI 21",
                 State = "VB",
                 County = "PIEMONTE"
@@ -110,19 +110,19 @@ public class OutletsControllerTests
     }
 
     [Fact]
-    public async Task GetOutlet_ByIdentifier_ShouldReturnOk()
+    public async Task GetOutlet_ByInternalCode_ShouldReturnOk()
     {
         // Arrange
-        var outletIdentifier = "001w000001ZUPO8AAP";
-        var outletEntity = new ImperialBackend.Domain.Entities.Outlet(2019, 23, 1, 1, 3, 14.08m, 4, 18, "red", 173, "OMEGNA 0002", outletIdentifier, "PIAZZA BELTRAMI 21", "VB", "PIEMONTE");
-        var outletDto = new OutletDto { OutletIdentifier = outletIdentifier };
+        var internalCode = "001w000001ZUPO8AAP";
+        var outletEntity = new ImperialBackend.Domain.Entities.Outlet(2019, 23, 1, 1, 3, 14.08m, 4, 18, "red", 173, "OMEGNA 0002", internalCode, "PIAZZA BELTRAMI 21", "VB", "PIEMONTE");
+        var outletDto = new OutletDto { InternalCode = internalCode };
 
-        _mockRepository.Setup(r => r.GetByIdAsync(outletIdentifier, It.IsAny<CancellationToken>()))
+        _mockRepository.Setup(r => r.GetByIdAsync(internalCode, It.IsAny<CancellationToken>()))
             .ReturnsAsync(outletEntity);
         _mockMapper.Setup(m => m.Map<OutletDto>(outletEntity)).Returns(outletDto);
 
         // Act
-        var response = await _controller.GetOutlet(outletIdentifier);
+        var response = await _controller.GetOutlet(internalCode);
 
         // Assert
         response.Result.Should().BeOfType<OkObjectResult>();
@@ -147,7 +147,7 @@ public class OutletsControllerTests
             HealthStatus = "red",
             StoreRank = 173,
             OutletName = "OMEGNA 0002",
-            OutletIdentifier = "001w000001ZUPO8AAP",
+            InternalCode = "001w000001ZUPO8AAP",
             AddressLine1 = "PIAZZA BELTRAMI 21",
             State = "VB",
             County = "PIEMONTE",
@@ -156,7 +156,7 @@ public class OutletsControllerTests
 
         var createdOutlet = new OutletDto
         {
-            OutletIdentifier = command.OutletIdentifier,
+            InternalCode = command.InternalCode,
             OutletName = command.OutletName
         };
 
@@ -173,6 +173,6 @@ public class OutletsControllerTests
         var createdResult = response.Result as CreatedAtActionResult;
         createdResult!.Value.Should().BeEquivalentTo(createdOutlet);
         createdResult.ActionName.Should().Be(nameof(OutletsController.GetOutlet));
-        createdResult.RouteValues!["outletIdentifier"].Should().Be(command.OutletIdentifier);
+        createdResult.RouteValues!["internalCode"].Should().Be(command.InternalCode);
     }
 }

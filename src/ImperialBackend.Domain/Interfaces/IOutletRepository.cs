@@ -8,7 +8,7 @@ namespace ImperialBackend.Domain.Interfaces;
 /// </summary>
 public interface IOutletRepository
 {
-    Task<Outlet?> GetByIdAsync(string outletIdentifier, CancellationToken cancellationToken = default);
+    Task<Outlet?> GetByIdAsync(string internalCode, CancellationToken cancellationToken = default);
 
     Task<IEnumerable<Outlet>> GetAllAsync(
         int? year = null,
@@ -30,7 +30,7 @@ public interface IOutletRepository
 
     Task<Outlet> AddAsync(Outlet outlet, CancellationToken cancellationToken = default);
     Task<Outlet> UpdateAsync(Outlet outlet, CancellationToken cancellationToken = default);
-    Task<bool> DeleteAsync(string outletIdentifier, CancellationToken cancellationToken = default);
+    Task<bool> DeleteAsync(string internalCode, CancellationToken cancellationToken = default);
 
-    Task<bool> ExistsAsync(string outletIdentifier, CancellationToken cancellationToken = default);
+    Task<bool> ExistsAsync(string internalCode, CancellationToken cancellationToken = default);
 }

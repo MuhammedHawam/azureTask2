@@ -23,14 +23,14 @@ public class OutletTests
         var healthStatus = "red";
         var storeRank = 173;
         var outletName = "OMEGNA 0002";
-        var outletIdentifier = "001w000001ZUPO8AAP";
+        var internalCode = "001w000001ZUPO8AAP";
         var addressLine1 = "PIAZZA BELTRAMI 21";
         var state = "VB";
         var county = "PIEMONTE";
 
         // Act
         var outlet = new Outlet(year, week, totalOuterQuantity, countOuterQuantity, totalSales6w, mean, lowerLimit, upperLimit,
-            healthStatus, storeRank, outletName, outletIdentifier, addressLine1, state, county);
+            healthStatus, storeRank, outletName, internalCode, addressLine1, state, county);
 
         // Assert
         outlet.Year.Should().Be(year);
@@ -44,7 +44,7 @@ public class OutletTests
         outlet.HealthStatus.Should().Be(healthStatus);
         outlet.StoreRank.Should().Be(storeRank);
         outlet.OutletName.Should().Be(outletName);
-        outlet.OutletIdentifier.Should().Be(outletIdentifier);
+        outlet.InternalCode.Should().Be(internalCode);
         outlet.AddressLine1.Should().Be(addressLine1);
         outlet.State.Should().Be(state);
         outlet.County.Should().Be(county);

@@ -32,7 +32,7 @@ public class CreateOutletCommandHandler : IRequestHandler<CreateOutletCommand, R
     {
         try
         {
-            _logger.LogInformation("Creating outlet: {OutletName} ({OutletIdentifier})", request.OutletName, request.OutletIdentifier);
+            _logger.LogInformation("Creating outlet: {OutletName} ({InternalCode})", request.OutletName, request.InternalCode);
 
             var outlet = new Outlet(
                 request.Year,
@@ -46,7 +46,7 @@ public class CreateOutletCommandHandler : IRequestHandler<CreateOutletCommand, R
                 request.HealthStatus,
                 request.StoreRank,
                 request.OutletName,
-                request.OutletIdentifier,
+                request.InternalCode,
                 request.AddressLine1,
                 request.State,
                 request.County);
@@ -64,7 +64,7 @@ public class CreateOutletCommandHandler : IRequestHandler<CreateOutletCommand, R
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating outlet: {OutletIdentifier}", request.OutletIdentifier);
+            _logger.LogError(ex, "Error creating outlet: {InternalCode}", request.InternalCode);
             return Result<OutletDto>.Failure("An error occurred while creating the outlet");
         }
     }

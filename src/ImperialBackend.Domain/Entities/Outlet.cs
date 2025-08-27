@@ -21,7 +21,7 @@ public class Outlet : BaseEntity
         string healthStatus,
         int storeRank,
         string outletName,
-        string outletIdentifier,
+        string internalCode,
         string addressLine1,
         string state,
         string county)
@@ -37,7 +37,7 @@ public class Outlet : BaseEntity
         HealthStatus = healthStatus ?? string.Empty;
         StoreRank = storeRank;
         OutletName = outletName ?? string.Empty;
-        OutletIdentifier = outletIdentifier ?? string.Empty;
+        InternalCode = internalCode ?? string.Empty;
         AddressLine1 = addressLine1 ?? string.Empty;
         State = state ?? string.Empty;
         County = county ?? string.Empty;
@@ -56,7 +56,7 @@ public class Outlet : BaseEntity
     public string HealthStatus { get; private set; } = string.Empty;
     public int StoreRank { get; private set; }
     public string OutletName { get; private set; } = string.Empty;
-    public string OutletIdentifier { get; private set; } = string.Empty;
+    public string InternalCode { get; private set; } = string.Empty;
     public string AddressLine1 { get; private set; } = string.Empty;
     public string State { get; private set; } = string.Empty;
     public string County { get; private set; } = string.Empty;
