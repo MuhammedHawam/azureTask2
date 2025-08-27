@@ -43,9 +43,9 @@ public class CreateOutletCommandValidator : AbstractValidator<CreateOutletComman
             .WithMessage("OutletName is required")
             .MaximumLength(200);
 
-        RuleFor(x => x.OutletIdentifier)
+        RuleFor(x => x.InternalCode)
             .NotEmpty()
-            .WithMessage("OutletIdentifier is required")
+            .WithMessage("internalCode is required")
             .MaximumLength(100);
 
         RuleFor(x => x.AddressLine1)

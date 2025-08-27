@@ -18,7 +18,7 @@ public class OutletDto
     public string HealthStatus { get; set; } = string.Empty;
     public int StoreRank { get; set; }
     public string OutletName { get; set; } = string.Empty;
-    public string OutletIdentifier { get; set; } = string.Empty;
+    public string InternalCode { get; set; } = string.Empty;
     public string AddressLine1 { get; set; } = string.Empty;
     public string State { get; set; } = string.Empty;
     public string County { get; set; } = string.Empty;
@@ -37,7 +37,7 @@ public class CreateOutletDto
     public string HealthStatus { get; set; } = string.Empty;
     public int StoreRank { get; set; }
     public string OutletName { get; set; } = string.Empty;
-    public string OutletIdentifier { get; set; } = string.Empty;
+    public string InternalCode { get; set; } = string.Empty;
     public string AddressLine1 { get; set; } = string.Empty;
     public string State { get; set; } = string.Empty;
     public string County { get; set; } = string.Empty;
@@ -56,7 +56,7 @@ public class UpdateOutletDto
     public string HealthStatus { get; set; } = string.Empty;
     public int StoreRank { get; set; }
     public string OutletName { get; set; } = string.Empty;
-    public string OutletIdentifier { get; set; } = string.Empty;
+    public string InternalCode { get; set; } = string.Empty;
     public string AddressLine1 { get; set; } = string.Empty;
     public string State { get; set; } = string.Empty;
     public string County { get; set; } = string.Empty;

@@ -21,12 +21,12 @@ public class OutletRepository : IOutletRepository
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<Outlet?> GetByIdAsync(string outletIdentifier, CancellationToken cancellationToken = default)
+    public async Task<Outlet?> GetByIdAsync(string internalCode, CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Getting outlet by identifier: {OutletIdentifier}", outletIdentifier);
+        _logger.LogDebug("Getting outlet by internalCode: {InternalCode}", internalCode);
         return await _context.Outlets
             .AsNoTracking()
-            .FirstOrDefaultAsync(o => o.OutletIdentifier == outletIdentifier, cancellationToken);
+            .FirstOrDefaultAsync(o => o.InternalCode == internalCode, cancellationToken);
     }
 
     //public async Task<IEnumerable<Outlet>> GetAllAsync(
@@ -72,10 +72,10 @@ public class OutletRepository : IOutletRepository
 
         // Step 1: latest year per outlet
         var latestYearPerOutlet = baseQuery
-            .GroupBy(o => o.OutletIdentifier)
+            .GroupBy(o => o.InternalCode)
             .Select(g => new
             {
-                OutletIdentifier = g.Key,
+                InternalCode = g.Key,
                 MaxYear = g.Max(o => o.Year)
             });
 
@@ -83,13 +83,13 @@ public class OutletRepository : IOutletRepository
         var latestWeekPerOutlet = baseQuery
             .Join(
                 latestYearPerOutlet,
-                o => new { o.OutletIdentifier, o.Year },
-                y => new { y.OutletIdentifier, Year = y.MaxYear },
+                o => new { o.InternalCode, o.Year },
+                y => new { y.InternalCode, Year = y.MaxYear },
                 (o, y) => o)
-            .GroupBy(o => new { o.OutletIdentifier, o.Year })
+            .GroupBy(o => new { o.InternalCode, o.Year })
             .Select(g => new
             {
-                g.Key.OutletIdentifier,
+                g.Key.InternalCode,
                 g.Key.Year,
                 MaxWeek = g.Max(o => o.Week)
             });
@@ -98,8 +98,8 @@ public class OutletRepository : IOutletRepository
         var latestPerOutletQuery = baseQuery
             .Join(
                 latestWeekPerOutlet,
-                o => new { o.OutletIdentifier, o.Year, o.Week },
-                lw => new { lw.OutletIdentifier, lw.Year, Week = lw.MaxWeek },
+                o => new { o.InternalCode, o.Year, o.Week },
+                lw => new { lw.InternalCode, lw.Year, Week = lw.MaxWeek },
                 (o, lw) => o);
 
         // Apply filters at database level
@@ -125,23 +125,23 @@ public class OutletRepository : IOutletRepository
         var baseQuery = _context.Outlets.AsNoTracking();
 
         var latestYearPerOutlet = baseQuery
-            .GroupBy(o => o.OutletIdentifier)
+            .GroupBy(o => o.InternalCode)
             .Select(g => new
             {
-                OutletIdentifier = g.Key,
+                InternalCode = g.Key,
                 MaxYear = g.Max(o => o.Year)
             });
 
         var latestWeekPerOutlet = baseQuery
             .Join(
                 latestYearPerOutlet,
-                o => new { o.OutletIdentifier, o.Year },
-                y => new { y.OutletIdentifier, Year = y.MaxYear },
+                o => new { o.InternalCode, o.Year },
+                y => new { y.InternalCode, Year = y.MaxYear },
                 (o, y) => o)
-            .GroupBy(o => new { o.OutletIdentifier, o.Year })
+            .GroupBy(o => new { o.InternalCode, o.Year })
             .Select(g => new
             {
-                g.Key.OutletIdentifier,
+                g.Key.InternalCode,
                 g.Key.Year,
                 MaxWeek = g.Max(o => o.Week)
             });
@@ -149,8 +149,8 @@ public class OutletRepository : IOutletRepository
         var latestPerOutletQuery = baseQuery
             .Join(
                 latestWeekPerOutlet,
-                o => new { o.OutletIdentifier, o.Year, o.Week },
-                lw => new { lw.OutletIdentifier, lw.Year, Week = lw.MaxWeek },
+                o => new { o.InternalCode, o.Year, o.Week },
+                lw => new { lw.InternalCode, lw.Year, Week = lw.MaxWeek },
                 (o, lw) => o);
 
         var filtered = ApplyFilters(latestPerOutletQuery, year, week, healthStatus, searchTerm);
@@ -166,7 +166,7 @@ public class OutletRepository : IOutletRepository
         _logger.LogDebug("Adding new outlet: {OutletName}", outlet.OutletName);
         _context.Outlets.Add(outlet);
         await _context.SaveChangesAsync(cancellationToken);
-        _logger.LogInformation("Successfully added outlet with Identifier: {OutletIdentifier}", outlet.OutletIdentifier);
+        _logger.LogInformation("Successfully added outlet with InternalCode: {InternalCode}", outlet.InternalCode);
         return outlet;
     }
 
@@ -175,33 +175,33 @@ public class OutletRepository : IOutletRepository
         if (outlet == null)
             throw new ArgumentNullException(nameof(outlet));
 
-        _logger.LogDebug("Updating outlet: {OutletIdentifier}", outlet.OutletIdentifier);
+        _logger.LogDebug("Updating outlet: {InternalCode}", outlet.InternalCode);
         _context.Outlets.Update(outlet);
         await _context.SaveChangesAsync(cancellationToken);
-        _logger.LogInformation("Successfully updated outlet: {OutletIdentifier}", outlet.OutletIdentifier);
+        _logger.LogInformation("Successfully updated outlet: {InternalCode}", outlet.InternalCode);
         return outlet;
     }
 
-    public async Task<bool> DeleteAsync(string outletIdentifier, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteAsync(string internalCode, CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Deleting outlet: {OutletIdentifier}", outletIdentifier);
+        _logger.LogDebug("Deleting outlet: {InternalCode}", internalCode);
 
-        var outlet = await _context.Outlets.FirstOrDefaultAsync(o => o.OutletIdentifier == outletIdentifier, cancellationToken);
+        var outlet = await _context.Outlets.FirstOrDefaultAsync(o => o.InternalCode == internalCode, cancellationToken);
         if (outlet == null)
         {
-            _logger.LogWarning("Outlet not found for deletion: {OutletIdentifier}", outletIdentifier);
+            _logger.LogWarning("Outlet not found for deletion: {InternalCode}", internalCode);
             return false;
         }
 
         _context.Outlets.Remove(outlet);
         await _context.SaveChangesAsync(cancellationToken);
-        _logger.LogInformation("Successfully deleted outlet: {OutletIdentifier}", outletIdentifier);
+        _logger.LogInformation("Successfully deleted outlet: {InternalCode}", internalCode);
         return true;
     }
 
-    public async Task<bool> ExistsAsync(string outletIdentifier, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsAsync(string internalCode, CancellationToken cancellationToken = default)
     {
-        return await _context.Outlets.AnyAsync(o => o.OutletIdentifier == outletIdentifier, cancellationToken);
+        return await _context.Outlets.AnyAsync(o => o.InternalCode == internalCode, cancellationToken);
     }
 
     private static IQueryable<Outlet> ApplyFilters(
@@ -230,7 +230,7 @@ public class OutletRepository : IOutletRepository
         {
             query = query.Where(o =>
                 o.OutletName.Contains(searchTerm) ||
-                o.OutletIdentifier.Contains(searchTerm) ||
+                o.InternalCode.Contains(searchTerm) ||
                 o.AddressLine1.Contains(searchTerm) ||
                 o.State.Contains(searchTerm) ||
                 o.County.Contains(searchTerm));
