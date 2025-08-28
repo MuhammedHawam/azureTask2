@@ -43,5 +43,22 @@ public class OutletConfiguration : IEntityTypeConfiguration<Outlet>
         builder.Property(o => o.AddressLine1).HasColumnName("Address").HasMaxLength(200);
         builder.Property(o => o.State).HasColumnName("City").HasMaxLength(50);
         builder.Property(o => o.County).HasColumnName("county").HasMaxLength(100);
+
+        // Additional mappings from order details table snapshot
+        builder.Property(o => o.OrdersCount6w).HasColumnName("ordersCount_6w");
+        builder.Property(o => o.PostalCode).HasColumnName("Postal_Code").HasMaxLength(20);
+        builder.Property(o => o.RegionName).HasColumnName("Region_name").HasMaxLength(100);
+        builder.Property(o => o.Area).HasColumnName("Area").HasMaxLength(100);
+        builder.Property(o => o.TerritoryExcel).HasColumnName("Territory_excel").HasMaxLength(100);
+        builder.Property(o => o.TradeAgreement).HasColumnName("trade_agreement").HasMaxLength(100);
+        builder.Property(o => o.Tier).HasColumnName("tier").HasMaxLength(50);
+        builder.Property(o => o.TPVolumiSticksObjSticks).HasColumnName("TP_Volumi_Sticks_ObjSticks");
+        builder.Property(o => o.TPObjVolumiTabaccoObjTabacco).HasColumnName("TP_Obj_Volumi_Tabacco_ObjTabacco");
+        builder.Property(o => o.TPObjSellOutPulzeObjPulze).HasColumnName("TP_Obj_Sell_Out_PULZE_ObjPULZE");
+        builder.Property(o => o.OOSPrediction).HasColumnName("OOS_prediction");
+        builder.Property(o => o.TerritoryIdentifier).HasColumnName("TerritoryIdentifier").HasMaxLength(100);
+        builder.Property(o => o.TerritoryStatus).HasColumnName("TerritoryStatus").HasMaxLength(50);
+        builder.Property(o => o.OutletIdentifier1).HasColumnName("OutletIdentifier_1").HasMaxLength(100);
+        builder.Property(o => o.TerritoryName).HasColumnName("TerritoryName").HasMaxLength(100);
     }
 }

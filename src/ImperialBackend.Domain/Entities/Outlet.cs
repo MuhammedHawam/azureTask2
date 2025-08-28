@@ -60,4 +60,21 @@ public class Outlet : BaseEntity
     public string AddressLine1 { get; private set; } = string.Empty;
     public string State { get; private set; } = string.Empty;
     public string County { get; private set; } = string.Empty;
+
+    // Extended order details fields
+    public int OrdersCount6w { get; private set; }
+    public string PostalCode { get; private set; } = string.Empty;
+    public string RegionName { get; private set; } = string.Empty;
+    public string Area { get; private set; } = string.Empty;
+    public string TerritoryExcel { get; private set; } = string.Empty;
+    public string TradeAgreement { get; private set; } = string.Empty;
+    public string Tier { get; private set; } = string.Empty;
+    public decimal? TPVolumiSticksObjSticks { get; private set; }
+    public decimal? TPObjVolumiTabaccoObjTabacco { get; private set; }
+    public decimal? TPObjSellOutPulzeObjPulze { get; private set; }
+    public decimal? OOSPrediction { get; private set; }
+    public string TerritoryIdentifier { get; private set; } = string.Empty;
+    public string TerritoryStatus { get; private set; } = string.Empty;
+    public string OutletIdentifier1 { get; private set; } = string.Empty;
+    public string TerritoryName { get; private set; } = string.Empty;
 }
